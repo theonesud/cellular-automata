@@ -1,9 +1,10 @@
 import pygame
-
-
-def init():
-    pygame.init()
+from logic import Session
 
 
 if __name__ == "__main__":
-    init()
+    pygame.init()
+    pygame.display.set_caption("Cellular Automata")
+    sess = Session()
+    sess.run_loop()
+    pygame.quit()
