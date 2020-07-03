@@ -1,4 +1,0 @@
-pygame==1.9.6
-autopep8==1.5.3
-flake8==3.8.3
-numpy==1.18.5
