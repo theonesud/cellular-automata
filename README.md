@@ -1,5 +1,5 @@
 # Cellular Automaton
-Inspired by John Conway's Game of Life. My goal is to build upon his idea and try to add more lifelike properties. Also my first Processing project.
+Inspired by John Conway's Game of Life. My goal is to build upon his idea and try to add more lifelike properties. Also my first Processing project using p5.js
 
 ## Features:
 - Float values (0.0-1.0) for cells
@@ -7,9 +7,8 @@ Inspired by John Conway's Game of Life. My goal is to build upon his idea and tr
 - Debug mode with stats printing on screen
 
 ## How to contribute?
-You need to have [Processing](https://processing.org) installed (tested on Processing 3 on mac). If using vscode to edit the code, the [processing plugin](https://marketplace.visualstudio.com/items?itemName=Tobiah.language-pde) and [java extention pack](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack) are good to have.
-
-To run the code in the Processing editor, just open the `.pde` file and press the play button. For vscode, install processing-java in the mac home dir (`/Users/{username}/processing-java`) and configure this path in vscode. Then `cmd+shift+b` compiles and runs the code.
+To use browser-sync for a live reloading dev server
+- `browser-sync start --server -f -w`
 
 ## More ideas to explore:
 - click to edit cells
