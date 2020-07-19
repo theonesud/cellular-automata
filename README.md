@@ -11,7 +11,7 @@ You need to have [Processing](https://processing.org) installed (tested on Proce
 
 To run the code in the Processing editor, just open the `.pde` file and press the play button. For vscode, install processing-java in the mac home dir (`/Users/{username}/processing-java`) and configure this path in vscode. Then `cmd+shift+b` compiles and runs the code.
 
-[Real Python blog](https://realpython.com/oop-in-python-vs-java/) comparing object oriented concepts in python and java
+[Real Python blogpost](https://realpython.com/oop-in-python-vs-java/) comparing object oriented concepts in python and java
 
 ## More ideas to explore:
 - click to edit cells
