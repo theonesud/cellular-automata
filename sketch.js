@@ -1,19 +1,63 @@
-let alive_yellow = "#e7ef23";
-let alive_red = "#f85200";
-let alive_blue = "#00a4d0";
-let alive_navy = "#315389";
-let dead_black = "#030317";
+let myp5 = new p5((sketch) => {
 
-function setup() {
-  createCanvas(800, 500); // size of the world in pixels
-  // background(dead_black);
-  // stroke(255, 35);
-  // frameRate(fps);
-  // textSize(20);
-  background(dead_black);
-  line(0, 0, width, height);
-}
+    let cellSize = 50; // in pixels
+    let percentAlive = 20;
+    let fps = 20;
+    // let debug = true;
+    let w
 
-function draw() {
-  // put drawing code here
-}
+    sketch.setup = () => {
+        sketch.createCanvas(window.innerWidth, window.innerHeight);
+        sketch.background(dead_black);
+        sketch.stroke(255, 35);
+        sketch.frameRate(fps);
+        sketch.textSize(20);
+
+        resetButton = sketch.createButton('Reset');
+        resetButton.position(0, 0);
+        resetButton.mousePressed(resetWorld);
+
+        clearButton = sketch.createButton('Clear');
+        clearButton.position(75, 0);
+        clearButton.mousePressed(clearWorld);
+
+        debug = sketch.createButton('Debug');
+        debug.position(150, 0);
+        debug.mousePressed(debugWorld);
+
+        w = new World(sketch, cellSize, Math.floor(sketch.width / cellSize),
+            Math.floor(sketch.height / cellSize));
+        w.randomInit(percentAlive);
+        sketch.noLoop();
+        // sketch.noSmooth();
+    };
+
+    sketch.draw = () => {
+        w.render();
+        w.nextGen();
+    };
+
+    sketch.keyPressed = () => {
+        if (sketch.key === " ") {
+            if (sketch.isLooping()) {
+                sketch.noLoop();
+            } else {
+                sketch.loop();
+            }
+        }
+    };
+
+    resetWorld = () => {
+        w.randomInit(percentAlive);
+        w.render();
+    };
+
+    clearWorld = () => {
+        w.clear();
+        w.render();
+    };
+
+    debugWorld = () => {
+        // show dialog box
+    };
+});
