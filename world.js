@@ -8,25 +8,107 @@ let dead_black = '#030317';
 class World {
 
     constructor(sketch, cellSize, noCellsX, noCellsY) {
+        this.gen = 0
         this.sketch = sketch;
         this.cellSize = cellSize;
         this.noCellsX = noCellsX;
         this.noCellsY = noCellsY;
         this.cells = Array(noCellsX).fill().map(() => Array(noCellsY).fill(0));
         this.cellsBuffer = Array(noCellsX).fill().map(() => Array(noCellsY).fill(0));
+        this.debug = false
     }
 
     randomInit = (percentAlive) => {
+        this.avgCell = 0
         for (let i = 0; i < this.noCellsX; ++i) {
             for (let j = 0; j < this.noCellsY; ++j) {
                 if (Math.random() * 100 > percentAlive) {
                     this.cells[i][j] = 0;
                 } else {
-                    this.cells[i][j] = Math.random(0.19, 1);
-                    // cells[i][j] = 1;
+                    this.cells[i][j] = Math.random() * (1 - 0.20) + 0.20;
+                    this.avgCell += 1;
                 }
             }
         }
+        this.avgCell = this.avgCell / (this.noCellsX * this.noCellsY);
+        console.log('Starting Life: ', this.avgCell.toFixed(2))
+    }
+
+    nextGen = () => {
+        this.gen++
+        this.avgNeighbours = 0;
+        this.avgCell = 0;
+        this.color = 0.06
+        let randomness = 0.9
+
+        for (let i = 0; i < this.noCellsX; ++i) {
+            for (let j = 0; j < this.noCellsY; ++j) {
+
+                let count = this.noNeighbours(i, j);
+                let chance = (Math.random() * (2 * randomness)) + 1 - randomness;
+
+                if (this.cellsBuffer[i][j] >= 0.20) {
+                    // underpopulation
+                    if (count < 2) {
+                        this.cells[i][j] = this.cells[i][j] - chance * (0.90 - this.color); // Death
+                    }
+                    // overpopulation
+                    if (count > 3) {
+                        this.cells[i][j] = this.cells[i][j] - chance * (0.90 + this.color); // Death
+                    }
+                } else {
+                    // stable
+                    if (count == 3) {
+                        this.cells[i][j] += chance * (0.90 - this.color);  // Birth
+                    }
+                }
+                this.avgNeighbours += count;
+                if (this.cells[i][j] > 0) {
+                    this.avgCell += 1;
+                }
+            }
+        }
+
+        if (this.debug == true) {
+            this.avgNeighbours = this.avgNeighbours / (this.noCellsX * this.noCellsY);
+            this.avgCell = this.avgCell / (this.noCellsX * this.noCellsY);
+            this.sketch.fill(0, 150);
+            this.sketch.rect(5, 47, 130, 100);
+            this.sketch.fill(255, 150);
+            this.sketch.text("Gen: " + this.gen, 10, 70);
+            this.sketch.text("Density: " + this.avgNeighbours.toFixed(2), 10, 100);
+            this.sketch.text("Life: " + this.avgCell.toFixed(2), 10, 130);
+            console.log("density: " + this.avgNeighbours.toFixed(2), "life: " + this.avgCell.toFixed(2));
+        }
+    }
+
+    noNeighbours = (i, j) => {
+        // Coordinates of neighbours
+        let kernel = [
+            [i - 1, j - 1],
+            [i, j - 1],
+            [i + 1, j - 1],
+            [i - 1, j],
+            [i + 1, j],
+            [i - 1, j + 1],
+            [i, j + 1],
+            [i + 1, j + 1]
+        ];
+
+        // Calculate no of neighbours
+        let count = 0;
+        let that = this
+        kernel.forEach(function (part, index) {
+            this[index][0] = part[0] === -1 ? that.noCellsX - 1 : part[0];
+            this[index][0] = part[0] === that.noCellsX ? 0 : part[0];
+            this[index][1] = part[1] === -1 ? that.noCellsY - 1 : part[1];
+            this[index][1] = part[1] === that.noCellsY ? 0 : part[1];
+            if (that.cellsBuffer[part[0]][part[1]] >= 0.20) {
+                count++;
+            }
+
+        }, kernel);
+        return count;
     }
 
     render = () => {
@@ -53,77 +135,8 @@ class World {
         }
     }
 
-    noNeighbours = (i, j) => {
-        // Coordinates of neighbours
-
-        // console.log(typeof (i), typeof (j))
-        let kernel = [
-            [i - 1, j - 1],
-            [i, j - 1],
-            [i + 1, j - 1],
-            [i - 1, j],
-            [i + 1, j],
-            [i - 1, j + 1],
-            [i, j + 1],
-            [i + 1, j + 1]
-        ];
-
-        // console.log(i, j, kernel)
-
-        // Calculate no of neighbours
-        let count = 0;
-        let that = this
-        kernel.forEach(function (part, index) {
-            this[index][0] = part[0] === -1 ? this.noCellsX - 1 : part[0];
-            this[index][0] = part[0] === this.noCellsX ? 0 : part[0];
-            this[index][1] = part[1] === -1 ? this.noCellsY - 1 : part[1];
-            this[index][1] = part[1] === this.noCellsY ? 0 : part[1];
-
-            // console.log(part[0], part[1])
-            // if (that.cellsBuffer[part[0]][part[1]] >= 0.20) {
-            //     count++;
-            //     // count += that.cellsBuffer[part[0]][part[1]];
-            // }
-
-        }, kernel);
-
-        return count;
-    }
-
-    nextGen = () => {
-        // let avgNeighbours = 0;
-        // let avgCell = 0;
-
-        for (let i = 0; i < this.noCellsX; ++i) {
-            for (let j = 0; j < this.noCellsY; ++j) {
-
-                let count = this.noNeighbours(i, j);
-                if (this.cellsBuffer[i][j] > 0.20) {
-                    // overpopulation and underpopulation hurts
-                    if (count < 2 || count > 3) {
-                        this.cells[i][j] -= 0.90;
-                    }
-                } else {
-                    if (count == 3) {
-                        // stable growth
-                        this.cells[i][j] += 0.87;
-                    }
-                }
-                // avgNeighbours += count;
-                // avgCell += this.cells[i][j];
-            }
-        }
-
-        // if (debug == true) {
-        //     avgNeighbours = avgNeighbours / (this.noCellsX * this.noCellsY);
-        //     avgCell = avgCell / (this.noCellsX * this.noCellsY);
-        //     fill(255, 175);
-        //     rect(5, 7, 275, 95);
-        //     fill(0);
-        //     text("fps: " + frameRate, 10, 30);
-        //     text("avgNeighbours: " + avgNeighbours, 10, 60);
-        //     text("avgCell: " + avgCell, 10, 90);
-        // }
+    toggle_stats = () => {
+        this.debug = !this.debug
     }
 
     clear = () => {
