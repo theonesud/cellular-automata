@@ -1,12 +1,15 @@
 let myp5 = new p5((sketch) => {
 
-  let cellSize = 5; // in pixels
-  let startingLife = 35;
+  // let cellSize = 5; // in pixels
+  // let startingLife = 35;
   let fps = 60;
   let w
 
   sketch.setup = () => {
-    sketch.createCanvas(window.innerWidth, window.innerHeight);
+    cell_size = Math.min(window.innerWidth, window.innerHeight) / 8
+
+    sketch.createCanvas(cell_size * 8, cell_size * 8);
+
     sketch.background(dead_black);
     sketch.stroke(255, 17);
     sketch.frameRate(fps);
@@ -24,9 +27,10 @@ let myp5 = new p5((sketch) => {
     debug.position(150, 0);
     debug.mousePressed(debugWorld);
 
-    w = new World(sketch, cellSize, Math.floor(sketch.width / cellSize),
-      Math.floor(sketch.height / cellSize));
-    w.randomInit(startingLife);
+    side = 1
+    w = new chessworld(sketch, cell_size, 8, 8);
+    w.Init(side);
+    w.images_preload()
 
     sketch.loop();
   };
